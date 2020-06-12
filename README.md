@@ -96,3 +96,8 @@ php artisan queue:work & #run queue consumer you can use supervisord instead
 php artisan command:send_post #Command artisan
 ```
          
+The solution is considering using a queue service in order to receive the command and send request in async way some kind 
+of CQRS, so if the process should be faster just like Email Queues does it normally
+         
+The queue has a configuration to detect fails and throw "n" retries 
+          
