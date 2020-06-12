@@ -9,7 +9,8 @@ use App\Jobs\RequestWasReceived;
 use App\Services\PostService;
 use GuzzleHttp\Client;
 use Illuminate\Foundation\Application;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Queue\Events\JobFailed;
+use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\ServiceProvider;
 
 /**
@@ -34,6 +35,7 @@ class AppServiceProvider extends ServiceProvider
         );
     }
 
+
     /**
      * Bootstrap any application services.
      *
@@ -41,6 +43,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        Queue::failing(function (JobFailed $event) {
+            // $event->connectionName
+            // $event->job
+            // $event->exception
+        });
     }
 }

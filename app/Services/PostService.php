@@ -49,10 +49,9 @@ final class PostService implements PostServiceInterface
             $response = $this->client->post($this->url);
             Log::info((string)$response->getBody());
         } catch (\Exception $exception) {
-            Log::warning($exception->getMessage());
             throw PostServiceException::fail($exception->getMessage());
-        } finally {
-            return true;
         }
+
+       return true;
     }
 }

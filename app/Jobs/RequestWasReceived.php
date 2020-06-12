@@ -11,6 +11,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Class RequestWasReceived
@@ -21,6 +22,7 @@ class RequestWasReceived implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public $tries = 5;
+    public $retryAfter = 3;
     public $maxExceptions = 3;
     public $timeout = 120;
 
@@ -34,12 +36,30 @@ class RequestWasReceived implements ShouldQueue
         //
     }
 
+    public function retryUntil()
+    {
+        return now()->addSeconds(5);
+    }
+
     /**
      * @param PostService $service
-     * @throws PostServiceException
      */
     public function handle(PostService $service)
     {
-        $service->sendRequest();
+        try {
+            $service->sendRequest();
+        } catch (\Exception $exception) {
+            $this->failed($exception);
+        }
+    }
+
+    /**
+     * @param \Exception $exception
+     * @throws \Exception
+     */
+    public function failed(\Exception $exception)
+    {
+        Log::warning($exception->getMessage());
+        throw $exception;
     }
 }
